@@ -39,9 +39,19 @@ class Restaurant
     #[ORM\OneToMany(targetEntity: RestaurantPicture::class, mappedBy: 'restaurant')]
     private Collection $restaurantPictures;
 
+    /**
+     * @var Collection<int, Avis>
+     */
+    #[ORM\OneToMany(targetEntity: Avis::class, mappedBy: 'restaurant')]
+    private Collection $avis;
+
+    #[ORM\ManyToOne(inversedBy: 'avis')]
+    private ?Avis $child = null;
+
     public function __construct()
     {
         $this->restaurantPictures = new ArrayCollection();
+        $this->avis = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -135,6 +145,48 @@ class Restaurant
                 $restaurantPicture->setRestaurant(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Avis>
+     */
+    public function getAvis(): Collection
+    {
+        return $this->avis;
+    }
+
+    public function addAvi(Avis $avi): static
+    {
+        if (!$this->avis->contains($avi)) {
+            $this->avis->add($avi);
+            $avi->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAvi(Avis $avi): static
+    {
+        if ($this->avis->removeElement($avi)) {
+            // set the owning side to null (unless already changed)
+            if ($avi->getRestaurant() === $this) {
+                $avi->setRestaurant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getChild(): ?Avis
+    {
+        return $this->child;
+    }
+
+    public function setChild(?Avis $child): static
+    {
+        $this->child = $child;
 
         return $this;
     }
