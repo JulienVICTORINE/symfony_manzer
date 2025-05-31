@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RestaurantPicture index
+{% endblock %}
+
+{% block body %}
+	<h1>RestaurantPicture index</h1>
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Name</th>
+				<th>File</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for restaurant_picture in restaurant_pictures %}
+				<tr>
+					<td>{{ restaurant_picture.id }}</td>
+					<td>{{ restaurant_picture.name }}</td>
+					<td>{{ restaurant_picture.file }}</td>
+					<td>
+						<a href="{{ path('app_restaurant_picture_show', {'id': restaurant_picture.id}) }}">Voir</a>
+						<a href="{{ path('app_restaurant_picture_edit', {'id': restaurant_picture.id}) }}">Modifier</a>
+					</td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="4">no records found</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<a href="{{ path('app_restaurant_picture_new') }}">Ajouter</a>
+{% endblock %}
