@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -34,6 +36,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Ville $ville = null;
+
+    /**
+     * @var Collection<int, Restaurant>
+     */
+    #[ORM\OneToMany(targetEntity: Restaurant::class, mappedBy: 'user')]
+    private Collection $restaurants;
+
+    public function __construct()
+    {
+        $this->restaurants = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -116,6 +129,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setVille(?Ville $ville): static
     {
         $this->ville = $ville;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Restaurant>
+     */
+    public function getRestaurants(): Collection
+    {
+        return $this->restaurants;
+    }
+
+    public function addRestaurant(Restaurant $restaurant): static
+    {
+        if (!$this->restaurants->contains($restaurant)) {
+            $this->restaurants->add($restaurant);
+            $restaurant->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRestaurant(Restaurant $restaurant): static
+    {
+        if ($this->restaurants->removeElement($restaurant)) {
+            // set the owning side to null (unless already changed)
+            if ($restaurant->getUser() === $this) {
+                $restaurant->setUser(null);
+            }
+        }
 
         return $this;
     }
